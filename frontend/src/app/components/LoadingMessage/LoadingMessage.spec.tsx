@@ -10,6 +10,6 @@ describe('<LoadingMessage>', () => {
         const wrapper = shallow(<LoadingMessage message={message} />);
         expect(wrapper.contains(<span>{message}?</span>)).toBeTruthy(); //remove the question mark to make the test pass
       });
-    });
+    });8
   });
 });
