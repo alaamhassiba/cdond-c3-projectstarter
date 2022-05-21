@@ -224,45 +224,45 @@ jobs:
      # Here's where you will add some code to rollback on failure      
       - destroy-environment
   deploy-frontend:
-  docker:
-    - image: cimg/node:13.8.0
-  steps:
-    - checkout
-    - run:
-        name: Install Amazon Cli
-        command: |
-          sudo apt update && sudo apt install -yy less
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install
-    - run:
-        name: Install npm
-        command: |
-          npm i
-    - run:
-        name: Get backend url
-        command: |
-          echo ENVIRONMENT=production  >> frontend/.env
-          echo NODE_ENV=production >> frontend/.env
-          export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
-          export API_URL="http://${BACKEND_IP}:3030"
-          echo "API_URL = ${API_URL}"
-          echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-          echo "Frontend Env ........"
-          cat frontend/.env
-    - run:
-        name: Deploy frontend objects
-        command: |
-          echo API_URL
-          cat frontend/.env
-          cd frontend
-          npm install 
-          npm run build
-          tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-          aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-          
-    - destroy-environment
-    - revert-migrations
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      - run:
+          name: Install Amazon Cli
+          command: |
+            sudo apt update && sudo apt install -yy less
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: Install npm
+          command: |
+            npm i
+      - run:
+          name: Get backend url
+          command: |
+            echo ENVIRONMENT=production  >> frontend/.env
+            echo NODE_ENV=production >> frontend/.env
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            echo "Frontend Env ........"
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            echo API_URL
+            cat frontend/.env
+            cd frontend
+            npm install 
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            
+      - destroy-environment
+      - revert-migrations
     
  
 workflows:
