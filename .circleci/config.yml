@@ -218,9 +218,12 @@ jobs:
           name: Run migrations
           command: |
             cd backend
+            npm install 
             npm i
-            npm run build
+            npm run build 
+            echo "hello"
             npm run migrations > migrations_dump.txt
+            echo "hello"
             npm audit
             cat migrations_dump.txt
       - run:
