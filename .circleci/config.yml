@@ -380,7 +380,21 @@ jobs:
               fi
       - destroy-environment
       - revert-migrations
- 
+  cloudfront-update:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      # Checkout code from git
+      - run:
+          name: Install dependencies
+          command: |
+            # your code here
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            # your code here
+      # Here's where you will add some code to rollback on failure
+
 workflows:
   default:
     jobs:
