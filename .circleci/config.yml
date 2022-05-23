@@ -312,9 +312,11 @@ jobs:
       - run:
           name: Prepare deploy backend
           command: |
-            npm i
+            npm install
             npm run build
             cd backend
+            npm init
+            npm install socket.io --save
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
             mkdir -v .circleci/ansible/roles/deploy/files
@@ -404,4 +406,5 @@ workflows:
           requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
+     
       
