@@ -394,15 +394,46 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-           # Change the initial stack name, as applicable to you
-           aws cloudformation deploy \
-            --template-file .circleci/files/cloudfront.yml \
-            --stack-name InitialStack \
-            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-            --tags project=udapeople
+              export OldWorkflowID=$(aws cloudformation \
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text)
+              echo OldWorkflowID: ${OldWorkflowID}
+              # Change the initial stack name, as applicable to you
+              aws cloudformation deploy \
+                --template-file .circleci/files/cloudfront.yml \
+                --stack-name InitialStack  \
+                --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+                --tags project=udapeople
+              echo OldWorkflowID: "${OldWorkflowID}"
+              echo Current Workflow ID : "${CIRCLE_WORKFLOW_ID:0:7}"
+            
+      
       - destroy-environment
-      - revert-migrations
+      - revert-migrations 
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
 
+      - run:
+          name: Remove old stacks and files
+          command: |
+            #Fetch the Old workflow ID
+            
+            export OldWorkflowID=$(aws cloudformation \
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text)
+            echo OldWorkflowID: ${OldWorkflowID}
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
+            then
+              echo " Cleanup is connfirmed for deleting resources "
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+            else
+              echo "No clean up is needed "
+            fi
 workflows:
   default:
     jobs:
@@ -433,4 +464,6 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
       
