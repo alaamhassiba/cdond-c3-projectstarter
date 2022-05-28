@@ -187,7 +187,7 @@ jobs:
           at: .
       - run:
           name: Install dependencies
-          command: |
+          command: |  
             apk add --update ansible
             apk add --update gzip
             apk add --update tar
@@ -418,12 +418,7 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            #Fetch the Old workflow ID
             
-                  
-            export OldWorkflowID=$(aws cloudformation \
-                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                    --no-paginate --output text)
             echo OldWorkflowID: "${OldWorkflowID}"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
             # Fetch the stack names          
@@ -431,7 +426,7 @@ jobs:
                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
             echo Stack names: "${STACKS[@]}"          
                   
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
+            if [[ "${Current Workflow ID}" != "${OldWorkflowID}" ]]
             then
               echo " -----------------------Delete Confirmed------------------ "
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
