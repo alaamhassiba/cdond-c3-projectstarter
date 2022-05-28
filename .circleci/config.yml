@@ -301,12 +301,11 @@ jobs:
       - run:
           name: Install dependencies required
           command: |
-            echo "hello"
             apk add --update ansible curl rsync openssh nodejs npm
             ansible --version
             pip install awscli
             aws --version
-            echo "hello"
+            
     
       
       - run:
